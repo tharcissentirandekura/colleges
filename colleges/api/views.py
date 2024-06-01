@@ -1,11 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics #importing the generic views
 from .models import College #importing the model
 from .serializers import CollegeSerializer #importing the serializer
 from rest_framework.views import APIView
-import requests
+from rest_framework import filters
+from rest_framework import viewsets
+
 
 class CollegeListCreate(generics.ListCreateAPIView):
     queryset = College.objects.all() #querying all the objects of the model
@@ -21,7 +23,17 @@ class CollegeListCreate(generics.ListCreateAPIView):
 class CollegeRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView): #deleting view
     queryset = College.objects.all() #querying all the objects of the model
     serializer_class = CollegeSerializer #using the CollegeSerializer class
-    lookup_field = 'pk' ##using the primary key as the lookup field
+
+    # overide http get method to get the object
+    def get_object(self):
+        queryset = self.get_queryset()
+        print(queryset)
+        filter = {}
+        for field in ['pk','name','location']:
+            if self.kwargs.get(field) is not None:
+                filter[field] = self.kwargs[field]
+        obj = get_object_or_404(queryset,**filter)
+        return obj
 
 # making our own view that does not inherit from the generic views
 class CollegeList(APIView):
@@ -38,6 +50,12 @@ class CollegeList(APIView):
         # serializing the data
         serializer = CollegeSerializer(colleges,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
+
+class CollegeViewSet(viewsets.ModelViewSet):
+    queryset = College.objects.all()
+    serializer_class = CollegeSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name','location']
 
 def home(request):
     return render(request,"api/home.html")

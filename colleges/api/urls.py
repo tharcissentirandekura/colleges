@@ -18,5 +18,18 @@ urlpatterns = [
         'colleges/<int:pk>/',
         views.CollegeRetrieveUpdateDestroy.as_view(),
         name='update-delete-retrieve'
-    ),
+    ),#creating a path for the CollegeRetrieveUpdateDestroy view
+
+    path(
+        'colleges/<str:name>/',
+        views.CollegeRetrieveUpdateDestroy.as_view(),
+        name='update-delete-retrieve'
+    ),#search by name of college
+
+    path(
+        'colleges/<str:location>/',
+        views.CollegeRetrieveUpdateDestroy.as_view(),
+        name='update-delete-retrieve'
+    ), # search by location of college
+
 ]
