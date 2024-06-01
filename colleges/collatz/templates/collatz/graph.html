@@ -1,0 +1,214 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'collatz/graph.css' %}">
+    <script src="{% static 'collatz/index.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+    <title>Graph</title>
+</head>
+<body>
+
+<nav>
+    <div class="header">
+        <h1>Collatz sequence visualization website</h1>
+    </div>
+</nav>
+
+    <section class="middle-page">
+        <h> {{username}}</h>
+        <div class="user-input">
+            <h>Enter the Number </h>
+                <form class="form-container" method="post">
+                    {% csrf_token %}
+                    <input class="input-bar" type="number", name="number" placeholder="Enter a number">
+                    <input class="submit-bar" type="submit" value="Generate">
+                </form>
+        </div>
+        <h>{{text}}</h>
+        <div class="graph">
+
+            <div class="custom-graph">
+                <select class="graph-option">
+                    <option value="bar">Change graph type</option>
+                    <option value="bar">Bar</option>
+                    <option value="line">Plot</option>
+                    <option value="scatter">Scatter</option>
+                </select>
+            </div>
+
+            <div class="images">
+                <h1 id="line">
+                    <canvas id="plot" width="600" height="300"></canvas>
+                    <script>
+                        let ctx = document.getElementById("plot").getContext("2d");
+                        let chart = new Chart(ctx, {
+                            type: "line",
+                            data: {
+                                labels: {{sequence|safe}},
+                                datasets: [
+                                    {
+                                        label: "reached number",
+                                        backgroundColor: "#79AEC8",
+                                        borderColor: "aqua",
+                                        data: {{ data|safe }}
+                                    }
+                                ]
+                            },
+                            options: {
+                                title: {
+                                    text: "Collatz sequence visualization board",
+                                    display: true
+                                }
+                            }
+                        }
+                    );
+                    </script>
+                </h1>
+
+                <h2 id="bar">
+                    <canvas id="bars" width="600" height="300"></canvas>
+                    <script>
+                        let bar = document.getElementById("bars").getContext("2d");
+                        let graph = new Chart(bar, {
+                            type: "bar",
+                            data: {
+                                labels: {{sequence|safe}},
+                                datasets: [
+                                    {
+                                        label: "reached number",
+                                        backgroundColor: "white",
+                                        borderColor: "aqua",
+                                        data: {{ data|safe }}
+                                    }
+                                ]
+                            },
+                            options: {
+                                title: {
+                                    text: "Collatz sequence visualization board",
+                                    display: true
+                                }
+                            }
+                        });
+                    </script>
+                </h2>
+                <h3 id="scatter-graph">
+
+                    <canvas id="scatter" width="600" height="300"></canvas>
+                    <script>
+                        let scatters = document.getElementById("scatter").getContext("2d");
+                        let scattering = new Chart(scatters, {
+                            type: "scatter",
+                            data: {
+                                labels: {{sequence|safe}},
+                                datasets: [
+                                    {
+                                        label: "reached number",
+                                        backgroundColor: "#79AEC8",
+                                        borderColor: "aqua",
+                                        data: {{ data|safe }}
+                                    }
+                                ]
+                            },
+                            options: {
+                                title: {
+                                    text: "Collatz sequence visualization dashboard",
+                                    display: true
+                                }
+                            }
+                        });
+                    </script>
+                </h3>
+
+        </div>
+
+        <section class="sequene-list">
+            <div class="lists">
+                <p>{{length}}</p>
+                <p>{{lists}}</p>
+            </div>
+        </section>
+
+    </section>
+
+    <section class="separator">
+        <div class="line">
+            <p></p>
+        </div>
+    </section>
+
+
+    <section class=" explanation">
+        <div class="collatz">
+            <p>
+                {{info}}
+            </p>
+        </div>
+
+        <div class="demo">
+            <h>Collatz sequence visualization</h>
+            <div class="description">
+                <p>
+                    The Collatz conjecture is a conjecture in mathematics that concerns a 
+                    sequence defined as follows: start with any positive integer n. 
+                    Then each term is obtained from the previous term as follows: 
+                    if the previous term is even, the next term is one half of the previous term. If the previous term is odd, the next term is 3 times the previous term plus 1. The conjecture is that no matter what value of n, the sequence will always eventually reach 1.
+                </p>
+            </div>
+
+            <div class="demo-image">
+                <button id="code-snipet" onclick="showImage()"> Click to view code</button>
+                <img id='image' src="{% static 'collatz/demo.jpg' %}">
+        </div>
+
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          let values = document.querySelector("select");
+          let type = values.value;
+
+            let points = document.querySelector("#scatter-graph");
+            let lines = document.querySelector("#line");
+            let bars = document.querySelector("#bar");
+
+
+            // document.querySelector('select')
+            points.style.display = "none";
+            bars.style.display = "none";
+            lines.style.display = "block";
+
+
+
+
+          document.querySelector('select').onchange = function() {
+
+
+            let choice = this.value;
+
+            if (choice === "line") {
+              console.log("The type is: " + choice);
+              points.style.display = "none";
+              bars.style.display = "none";
+              lines.style.display = "block";
+            } else if (choice === "scatter") {
+              console.log("The type is: " + choice);
+              points.style.display = "block";
+              bars.style.display = "none";
+              lines.style.display = "none";
+            } else if (choice === "bar") {
+              console.log("The type is: " + choice);
+              points.style.display = "none";
+              bars.style.display = "block";
+              lines.style.display = "none";
+            }
+          };
+        });
+
+    </script>
+
+
+</body>
+</html>

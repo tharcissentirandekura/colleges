@@ -39,3 +39,5 @@ class CollegeList(APIView):
         serializer = CollegeSerializer(colleges,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
+def home(request):
+    return render(request,"api/home.html")
